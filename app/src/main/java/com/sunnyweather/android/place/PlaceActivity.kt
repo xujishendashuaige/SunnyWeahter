@@ -1,5 +1,6 @@
 package com.sunnyweather.android.place
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
@@ -12,10 +13,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sunnyweather.android.R
+import com.sunnyweather.android.weather.WeatherActivity
 
 class PlaceActivity : AppCompatActivity(){
 
-    private val viewModel by lazy { ViewModelProvider(this).get(PlaceViewModel::class.java) }
+    val viewModel by lazy { ViewModelProvider(this).get(PlaceViewModel::class.java) }
 
     private lateinit var adapter: PlaceAdapter
 
@@ -29,6 +31,18 @@ class PlaceActivity : AppCompatActivity(){
     @SuppressLint("NotifyDataSetChanged", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if(viewModel.isSavedPlace()){
+           val place = viewModel.getSavedPlace()
+           val intent = Intent(this, WeatherActivity::class.java).apply {
+               putExtra("location_lng",place.location.lng)
+               putExtra("location_lat",place.location.lat)
+               putExtra("place_name",place.name)
+           }
+            startActivity(intent)
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_place)
 
 

@@ -1,15 +1,18 @@
 package com.sunnyweather.android.place
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.sunnyweather.android.R
 import com.sunnyweather.android.model.Place
+import com.sunnyweather.android.weather.WeatherActivity
 
 class PlaceAdapter(private val placeActivity: PlaceActivity, private val placeList: List<Place>) :
     RecyclerView.Adapter<PlaceAdapter.ViewHolder>(){
@@ -21,7 +24,20 @@ class PlaceAdapter(private val placeActivity: PlaceActivity, private val placeLi
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.place_item,parent,false)
-        return ViewHolder(view)
+        val holder = ViewHolder(view)
+        holder.itemView.setOnClickListener{
+            val position = holder.adapterPosition
+            val place = placeList[position]
+            val intent = Intent(parent.context,WeatherActivity::class.java).apply{
+                putExtra("location_lat",place.location.lat)
+                putExtra("location_lng",place.location.lng)
+                putExtra("place_name",place.name)
+            }
+            placeActivity.viewModel.savePlace(place)
+            placeActivity.startActivity(intent)
+            placeActivity?.finish()
+        }
+        return holder
     }
 
     override fun getItemCount() = placeList.size
